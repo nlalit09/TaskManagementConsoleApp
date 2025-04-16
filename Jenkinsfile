@@ -1,39 +1,54 @@
 pipeline {
     agent any
-
+    
     tools {
-        jdk 'JDK-17'
-        maven 'Maven-3.9.5'
+        maven 'Maven-3.9.5'  // Adjust this to match your Maven installation name
     }
-
+    
     stages {
-        stage('Checkout Code') {
+        stage('Checkout SCM') {
             steps {
-                git 'https://github.com/nlalit09/TaskManagementConsoleApp.git'
+                script {
+                    // Ensures that the 'main' branch is checked out
+                    checkout([$class: 'GitSCM', 
+                              branches: [[name: '*/main']]])
+                }
             }
         }
-
+        
         stage('Build') {
             steps {
-                sh 'mvn clean install'
+                script {
+                    // Your build steps, for example:
+                    sh 'mvn clean install'
+                }
             }
         }
 
         stage('Test') {
             steps {
-                sh 'mvn test'
+                script {
+                    // Your test steps, for example:
+                    sh 'mvn test'
+                }
             }
         }
 
         stage('Package') {
             steps {
-                sh 'mvn package'
+                script {
+                    // Your packaging steps, for example:
+                    sh 'mvn package'
+                }
             }
         }
 
         stage('Archive Artifacts') {
             steps {
-                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+                script {
+                    // Archive build artifacts, if any
+                    archiveArtifacts '**/target/*.jar'
+                }
             }
         }
     }
