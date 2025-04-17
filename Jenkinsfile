@@ -4,7 +4,9 @@ pipeline {
     tools {
         maven 'Maven-3.9.5'  // Adjust this to match your Maven installation name
     }
-    
+    environment {
+        IMAGE_NAME = "task-management-app"
+    }
     stages {
         stage('Checkout SCM') {
             steps {
@@ -49,6 +51,18 @@ pipeline {
                     // Archive build artifacts, if any
                     archiveArtifacts '**/target/*.jar'
                 }
+            }
+        }
+        stage('Build Jar') {
+            steps {
+                sh 'mvn clean package -DskipTests'
+            }
+        }
+
+
+        stage('Build Docker Image') {
+            steps {
+                sh "docker build -t ${IMAGE_NAME} ."
             }
         }
     }
